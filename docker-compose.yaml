@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   frontend:
-    container_name: frontend
+    container_name: wasser-frontend
     build:
       context: ./frontend
       dockerfile: Dockerfile.frontend
@@ -24,7 +24,7 @@ services:
       traefik.http.services.wwidw.loadbalancer.server.port: 3000
     
   backend:
-    container_name: backend
+    container_name: wasser-backend
     build:
       context: ./backend
       dockerfile: Dockerfile.backend
@@ -40,7 +40,7 @@ services:
       traefik.http.services.wwidw-back.loadbalancer.server.port: 8889
 
   postgres:
-    container_name: postgres
+    container_name: wasser-postgres
     image: postgres:latest
     restart: always
     # ports:
