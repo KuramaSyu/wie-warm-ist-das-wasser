@@ -19,6 +19,7 @@ def make_app():
     ])
 
 if __name__ == "__main__":
+    print("Starting server...")
     app = make_app()
     app.listen(8889)
     print("Server running at http://localhost:8889/temperature")
