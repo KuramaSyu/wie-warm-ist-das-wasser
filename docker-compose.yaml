@@ -22,6 +22,9 @@ services:
       traefik.http.routers.wwidw.entrypoints: websecure
       traefik.http.routers.wwidw.rule: Host(`wie-warm-ist-das-wasser.inuthebot.duckdns.org`)
       traefik.http.services.wwidw.loadbalancer.server.port: 3000
+    networks:
+      - default
+      - proxy
     
   backend:
     container_name: wasser-backend
@@ -38,14 +41,22 @@ services:
       traefik.http.routers.wwidw-back.entrypoints: websecure
       traefik.http.routers.wwidw-back.rule: Host(`wie-warm-ist-das-wasser.inuthebot.duckdns.org`)
       traefik.http.services.wwidw-back.loadbalancer.server.port: 8889
+    networks:
+      - default
+      - proxy
 
   postgres:
     container_name: wasser-postgres
     image: postgres:latest
     restart: always
-    # ports:
-    #   - "5432:5432"
     environment:
       POSTGRES_DB: your_database_name
       POSTGRES_USER: your_username
       POSTGRES_PASSWORD: your_password
+    networks:
+      - default
+
+networks:
+  proxy:
+    external: true
+  default:
