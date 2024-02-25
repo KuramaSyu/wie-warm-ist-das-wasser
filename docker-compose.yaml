@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  frontend:
+    container_name: frontend
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    # ports:
+    #   - "3000:3000"
+    volumes:
+      - ./src:/app/src
+      - ./public:/app/public
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - postgres
+      - backend
+  labels:     
+    com.centurylinklabs.watchtower.enable: false
+    traefik.enable: true
+    traefik.http.routers.servicename.entrypoints: websecure
+    traefik.http.routers.servicename.rule: Host(`wie-warm-ist-das-wasser.inuthebot.duckdns.org`)
+    traefik.http.services.servicename.loadbalancer.server.port: 3000
+    
+  backend:
+    container_name: backend
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    # ports:
+    #   - "8889:8889"
+    depends_on:
+      - postgres
+    labels:
+      com.centurylinklabs.watchtower.enable: false
+      traefik.enable: true
+      traefik.http.routers.backend.entrypoints: websecure
+      traefik.http.routers.backend.rule: Host(`wie-warm-ist-das-wasser.inuthebot.duckdns.org`)
+      traefik.http.services.backend.loadbalancer.server.port: 8889
+
+  postgres:
+    container_name: postgres
+    image: postgres:latest
+    restart: always
+    # ports:
+    #   - "5432:5432"
+    environment:
+      POSTGRES_DB: your_database_name
+      POSTGRES_USER: your_username
+      POSTGRES_PASSWORD: your_password

@@ -1,0 +1,18 @@
+# Use Python image as base
+FROM python:3.9-slim
+
+# Set working directory
+WORKDIR /app
+
+# Copy and install requirements
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the application
+COPY . .
+
+# Expose port 8888
+EXPOSE 8888
+
+# Run the application
+CMD ["python", "your_backend_script.py"]
