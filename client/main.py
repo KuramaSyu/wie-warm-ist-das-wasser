@@ -8,16 +8,17 @@ def get_temperature():
     # Da dies je nachdem, welcher Sensor verwendet wird, variieren kann, verwenden wir hier ein Beispiel.
     # In diesem Beispiel nehmen wir an, dass die Temperatur über das Kommandozeilenprogramm 'vcgencmd' ausgelesen werden kann.
     # Du musst diesen Teil entsprechend anpassen, um die Temperatur korrekt auszulesen.
-    try:
-        temperature = subprocess.check_output(["vcgencmd", "measure_temp"]).decode("utf-8")
-        temperature = float(temperature.split('=')[1].split('\'')[0])
-        return temperature
-    except Exception as e:
-        print("Fehler beim Lesen der Temperatur:", e)
-        return None
+    return 5
+    # try:
+    #     temperature = subprocess.check_output(["vcgencmd", "measure_temp"]).decode("utf-8")
+    #     temperature = float(temperature.split('=')[1].split('\'')[0])
+    #     return temperature
+    # except Exception as e:
+    #     print("Fehler beim Lesen der Temperatur:", e)
+    #     return None
 
 def send_temperature(temperature):
-    url = "https://wwidw-backend.inuthebot.duckdns/set_temperature"
+    url = "https://wwidw-backend.inuthebot.duckdns.org/set_temperature"
     payload = {"temperature": temperature}
     headers = {"Content-Type": "application/json"}
 

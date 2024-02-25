@@ -29,7 +29,8 @@ class TemperatureHandler(tornado.web.RequestHandler):
         
 class SetTemperatureHandler(tornado.web.RequestHandler):
     def post(self):
-        temperature = self.get_argument("temperature")
+        temperature = self.get_body_argument("temperature")
+        #temperature = self.get_argument("temperature")
         TemperatureManager.set_temperature(float(temperature))
         
         self.set_header("Content-Type", "application/json")
