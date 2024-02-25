@@ -39,7 +39,7 @@ services:
       com.centurylinklabs.watchtower.enable: false
       traefik.enable: true
       traefik.http.routers.wwidw-back.entrypoints: websecure
-      traefik.http.routers.wwidw-back.rule: Host(`wie-warm-ist-das-wasser.inuthebot.duckdns.org`)
+      traefik.http.routers.wwidw-back.rule: Host(`wwidw-backend.inuthebot.duckdns.org`)
       traefik.http.services.wwidw-back.loadbalancer.server.port: 8889
     networks:
       - default

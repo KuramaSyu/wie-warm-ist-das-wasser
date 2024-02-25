@@ -7,7 +7,7 @@ const TemperatureDisplay: React.FC = () => {
   useEffect(() => {
     const fetchTemperature = async () => {
       try {
-        const response = await axios.get('https://wie-warm-ist-das-wasser.inuthebot.duckdns.org/get_temperature');
+        const response = await axios.get('https://wwidw-backend.inuthebot.duckdns.org/get_temperature');
         setTemperature(response.data.temperature);
       } catch (error) {
         console.error('Error fetching temperature:', error);
