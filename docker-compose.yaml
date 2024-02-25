@@ -16,11 +16,12 @@ services:
     depends_on:
       - postgres
       - backend
-  labels:     
-    traefik.enable: true
-    traefik.http.routers.wwidw.entrypoints: websecure
-    traefik.http.routers.wwidw.rule: Host(`wie-warm-ist-das-wasser.inuthebot.duckdns.org`)
-    traefik.http.services.wwidw.loadbalancer.server.port: 3000
+    labels:     
+      com.centurylinklabs.watchtower.enable: false
+      traefik.enable: true
+      traefik.http.routers.wwidw.entrypoints: websecure
+      traefik.http.routers.wwidw.rule: Host(`wie-warm-ist-das-wasser.inuthebot.duckdns.org`)
+      traefik.http.services.wwidw.loadbalancer.server.port: 3000
     
   backend:
     container_name: backend
@@ -32,6 +33,7 @@ services:
     depends_on:
       - postgres
     labels:
+      com.centurylinklabs.watchtower.enable: false
       traefik.enable: true
       traefik.http.routers.wwidw-back.entrypoints: websecure
       traefik.http.routers.wwidw-back.rule: Host(`wie-warm-ist-das-wasser.inuthebot.duckdns.org`)
