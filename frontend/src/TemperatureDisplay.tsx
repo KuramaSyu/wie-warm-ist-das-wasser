@@ -14,22 +14,20 @@ const TemperatureDisplay: React.FC = () => {
       }
     };
 
-    const interval = setInterval(fetchTemperature, 5000); // Fetch temperature every 5 seconds
+    const interval = setInterval(fetchTemperature, 1000); // Fetch temperature every 5 seconds
 
     // Cleanup function to clear interval when component unmounts or changes
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <div className="flex flex-col justify-center items-center h-screen">
-      <h1 className="text-4xl font-bold mb-4">Wie warm ist das</h1>
-      <h1 className="text-6xl font-bold mb-4">Wasser?</h1>
-      <div className="text-8xl font-bold my-10 p mx-10 m text-blue-500">
-        <div className="bg-black py-5 rounded-3xl bg-opacity-20 p-4">
-          {temperature !== null ? `${temperature.toFixed(2)}°C` : 'Loading...'}
-        </div>
+    <div className="flex flex-col justify-center items-center h-screen px-4">
+      <h1 className="text-3xl sm:text-4xl font-bold mb-4 sm:mb-4">Wie warm ist das</h1>
+      <h1 className="text-6xl sm:text-6xl font-bold sm:mb-4">Wasser?</h1>
+      <div className="text-6xl sm:text-8xl font-bold mt-12 mb-12 sm:my-10 p-8 sm:px-10 sm:py-8 bg-black rounded-3xl bg-opacity-20 text-blue-500">
+        {temperature !== null ? `${temperature.toFixed(2)}°C` : 'Loading...'}
       </div>
-      <p className="text-xl text-gray-600">Current Temperature</p>
+      <p className="text-xl sm:text-xl text-gray-600">Current Temperature</p>
     </div>
   );
 };
