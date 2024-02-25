@@ -22,7 +22,8 @@ const TemperatureDisplay: React.FC = () => {
 
   return (
     <div className="flex flex-col justify-center items-center h-screen">
-      <h1 className="text-6xl font-bold mb-4">Temperature Display</h1>
+      <h1 className="text-4xl font-bold mb-4">Wie warm ist das</h1>
+      <h1 className="text-6xl font-bold mb-4">Wasser?</h1>
       <div className="text-8xl font-bold my-10 p mx-10 m text-blue-500">
         <div className="bg-black py-5 rounded-3xl bg-opacity-20 p-4">
           {temperature !== null ? `${temperature.toFixed(2)}°C` : 'Loading...'}
