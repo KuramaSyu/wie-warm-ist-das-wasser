@@ -2,13 +2,17 @@ import requests
 import time
 import json
 import subprocess
+import psutil
 
 def get_temperature():
-    # Hier sollte der Code stehen, um die Temperatur vom Raspberry Pi auszulesen.
-    # Da dies je nachdem, welcher Sensor verwendet wird, variieren kann, verwenden wir hier ein Beispiel.
-    # In diesem Beispiel nehmen wir an, dass die Temperatur über das Kommandozeilenprogramm 'vcgencmd' ausgelesen werden kann.
-    # Du musst diesen Teil entsprechend anpassen, um die Temperatur korrekt auszulesen.
-    return 5
+    """Get CPU temperature."""
+    try:
+        # Read CPU temperature from psutil
+        temperature = psutil.sensors_temperatures()['coretemp'][0].current
+        return temperature
+    except Exception as e:
+        print(f"Error reading CPU temperature: {e}")
+        return 0
     # try:
     #     temperature = subprocess.check_output(["vcgencmd", "measure_temp"]).decode("utf-8")
     #     temperature = float(temperature.split('=')[1].split('\'')[0])
@@ -18,7 +22,7 @@ def get_temperature():
     #     return None
 
 def send_temperature(temperature):
-    url = "https://wwidw-backend.inuthebot.duckdns.org/set_temperature"
+    url = "http://localhost:8889/set_temperature"
     payload = {"temperature": temperature}
     headers = {"Content-Type": "application/json"}
 

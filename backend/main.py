@@ -2,6 +2,8 @@ import tornado.ioloop
 import tornado.web
 import asyncio
 import random
+import traceback
+import json
 
 class TemperatureManager:
     temperature: float = 0
@@ -29,14 +31,28 @@ class TemperatureHandler(tornado.web.RequestHandler):
         
 class SetTemperatureHandler(tornado.web.RequestHandler):
     def post(self):
-        temperature = self.get_body_argument("temperature")
-        #temperature = self.get_argument("temperature")
-        TemperatureManager.set_temperature(float(temperature))
-        
         self.set_header("Content-Type", "application/json")
         self.set_header("Access-Control-Allow-Origin", "*")  # Allow requests from all origins
-        
+        temperature = None
+        try:
+            data = json.loads(self.request.body.decode('utf-8'))
+            print(data)
+            temperature = data.get('temperature')
+        except Exception as e:
+            print("Error processing request:", e)
+            self.set_status(400)
+            self.finish("Error processing request")
+        #temperature = self.get_argument("temperature")
+        if temperature is not None:
+            TemperatureManager.set_temperature(float(temperature))
+        else:
+            self.set_status(400)
+            self.finish("Invalid temperature")
+            
+
         self.write({"code": 200})
+        
+        
 
 
 def make_app():
