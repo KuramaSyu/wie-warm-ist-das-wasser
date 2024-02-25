@@ -8,6 +8,7 @@ def get_temperature():
     """Get CPU temperature."""
     try:
         # Read CPU temperature from psutil
+        print(psutil.sensors_temperatures())
         temperature = psutil.sensors_temperatures()['coretemp'][0].current
         return temperature
     except Exception as e:
@@ -22,7 +23,7 @@ def get_temperature():
     #     return None
 
 def send_temperature(temperature):
-    url = "http://localhost:8889/set_temperature"
+    url = "https://wwidw-backend.inuthebot.duckdns.org/set_temperature"
     payload = {"temperature": temperature}
     headers = {"Content-Type": "application/json"}
 
