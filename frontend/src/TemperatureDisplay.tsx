@@ -14,7 +14,10 @@ const TemperatureDisplay: React.FC = () => {
       }
     };
 
-    fetchTemperature();
+    const interval = setInterval(fetchTemperature, 5000); // Fetch temperature every 5 seconds
+
+    // Cleanup function to clear interval when component unmounts or changes
+    return () => clearInterval(interval);
   }, []);
 
   return (
