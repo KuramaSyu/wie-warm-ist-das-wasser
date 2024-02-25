@@ -5,9 +5,12 @@ import random
 
 class TemperatureHandler(tornado.web.RequestHandler):
     async def get(self):
-        # Simuliere eine Async-Operation (z. B. eine Datenbankabfrage)
+        # Simulate an async operation (e.g., a database query)
         await asyncio.sleep(1)
+        
         self.set_header("Content-Type", "application/json")
+        self.set_header("Access-Control-Allow-Origin", "*")  # Allow requests from all origins
+        
         self.write({"temperature": random.uniform(-43, -42)})
 
 def make_app():
