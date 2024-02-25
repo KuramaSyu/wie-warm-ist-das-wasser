@@ -22,9 +22,13 @@ const TemperatureDisplay: React.FC = () => {
 
   return (
     <div className="flex flex-col justify-center items-center h-screen">
-      <h1 className="text-4xl font-bold mb-4">Temperature Display</h1>
-      <div className="text-4xl font-bold mb-4 text-blue-500">{temperature !== null ? `${temperature}°C` : 'Loading...'}</div>
-      <p className="text-lg text-gray-600">Current Temperature</p>
+      <h1 className="text-6xl font-bold mb-4">Temperature Display</h1>
+      <div className="text-8xl font-bold my-10 p mx-10 m text-blue-500">
+        <div className="bg-black py-5 rounded-3xl bg-opacity-20 p-4">
+          {temperature !== null ? `${temperature.toFixed(2)}°C` : 'Loading...'}
+        </div>
+      </div>
+      <p className="text-xl text-gray-600">Current Temperature</p>
     </div>
   );
 };
