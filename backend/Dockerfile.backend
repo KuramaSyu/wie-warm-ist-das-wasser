@@ -3,7 +3,7 @@ FROM python:3.9-slim
 
 # Set working directory
 WORKDIR /app
-
+CD backend
 # Copy and install requirements
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
@@ -15,4 +15,4 @@ COPY . .
 EXPOSE 8888
 
 # Run the application
-CMD ["python", "your_backend_script.py"]
+CMD ["python", "main.py"]

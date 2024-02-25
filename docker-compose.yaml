@@ -21,7 +21,7 @@ services:
       traefik.enable: true
       traefik.http.routers.wwidw.entrypoints: websecure
       traefik.http.routers.wwidw.rule: Host(`wie-warm-ist-das-wasser.inuthebot.duckdns.org`)
-      traefik.http.services.wwidw.loadbalancer.server.port: 3000
+      traefik.http.services.wwidw.loadbalancer.server.port: 80
     networks:
       - default
       - proxy
