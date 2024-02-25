@@ -8,8 +8,8 @@ def get_temperature():
     """Get CPU temperature."""
     try:
         # Read CPU temperature from psutil
-        print(psutil.sensors_temperatures())
-        temperature = psutil.sensors_temperatures()['coretemp'][0].current
+        # print(psutil.sensors_temperatures())
+        temperature = psutil.sensors_temperatures()['cpu_thermal'][0].current
         return temperature
     except Exception as e:
         print(f"Error reading CPU temperature: {e}")
