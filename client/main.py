@@ -101,6 +101,7 @@ def main():
             temperature = get_temperature()
             if temperature is not None:
                 temperatures.append(temperature)
+            send_temperature(temperature)
             time.sleep(1)  # Wait 1 second before reading the temperature again
         
         if temperatures:
