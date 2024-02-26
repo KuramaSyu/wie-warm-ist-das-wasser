@@ -9,14 +9,18 @@ import traceback
 import logging
 from typing import *
 from pprint import pformat
+import csv
+from datetime import datetime
 
 HOSTNAME: Literal["raspberrypi", "notebook"] = None
 SENSOR: Optional[str] = None  # Variable to store the sensor argument value
+OUTPUT_FILE = "output.csv"  # Default output file
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Script to send CPU temperature to a server.')
     parser.add_argument('hostname', choices=['raspberrypi', 'notebook'], help='Hostname of the device')
     parser.add_argument('-s', '--sensor', help='Sensor type (optional)')
+    parser.add_argument('-o', '--output', default=OUTPUT_FILE, help='Output CSV file')
     parser.add_argument('--debug', action='store_true', help='Enable debug mode')
     return parser.parse_args()
 
@@ -30,7 +34,7 @@ class Methods:
         """Get CPU temperature."""
         try: 
             # 1-wire Slave Datei lesen
-            with open(f'/sys/bus/w1/devices/{SENSOR}/w1_slave', "r") as f: 
+            with open('/sys/bus/w1/devices/28-0516848e26ff/w1_slave', "r") as f: 
                 filecontent = f.read()
                 stringvalue = filecontent.split("\n")[1].split(" ")[9]
                 temperature = float(stringvalue[2:]) / 1000
@@ -65,7 +69,7 @@ def get_temperature():
 
 def send_temperature(temperature):
     url = "https://wwidw-backend.inuthebot.duckdns.org/set_temperature"
-    payload = {"temperature": temperature, "hostname": HOSTNAME, "sensor": SENSOR}
+    payload = {"temperature": temperature, "hostname": HOSTNAME}
     headers = {"Content-Type": "application/json"}
 
     try:
@@ -77,19 +81,34 @@ def send_temperature(temperature):
     except Exception as e:
         logging.error("Error sending temperature: %s", e)
 
+def write_to_csv(data):
+    with open(OUTPUT_FILE, mode='a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(data)
+
 def main():
-    global HOSTNAME, SENSOR
+    global HOSTNAME, SENSOR, OUTPUT_FILE
     args = parse_arguments()
     setup_logging(args.debug)
     
     HOSTNAME = args.hostname
-    SENSOR = args.sensor  # Store the sensor argument value
+    SENSOR = args.sensor
+    OUTPUT_FILE = args.output
     
     while True:
-        temperature = get_temperature()
-        if temperature is not None:
-            send_temperature(temperature)
-        time.sleep(1)  # Wait 1 second before reading and sending the temperature again
+        temperatures = []
+        for _ in range(60):
+            temperature = get_temperature()
+            if temperature is not None:
+                temperatures.append(temperature)
+            time.sleep(1)  # Wait 1 second before reading the temperature again
+        
+        if temperatures:
+            average_temperature = sum(temperatures) / len(temperatures)
+            iso_time = datetime.utcnow().isoformat()
+            data = [HOSTNAME, SENSOR, iso_time, average_temperature]
+            logging.info(f"Write to CSV: {data}")
+            write_to_csv(data)
 
 if __name__ == "__main__":
     main()
