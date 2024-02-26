@@ -11,10 +11,12 @@ from typing import *
 from pprint import pformat
 
 HOSTNAME: Literal["raspberrypi", "notebook"] = None
+SENSOR: Optional[str] = None  # Variable to store the sensor argument value
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Script to send CPU temperature to a server.')
     parser.add_argument('hostname', choices=['raspberrypi', 'notebook'], help='Hostname of the device')
+    parser.add_argument('-s', '--sensor', help='Sensor type (optional)')
     parser.add_argument('--debug', action='store_true', help='Enable debug mode')
     return parser.parse_args()
 
@@ -28,7 +30,7 @@ class Methods:
         """Get CPU temperature."""
         try: 
             # 1-wire Slave Datei lesen
-            with open('/sys/bus/w1/devices/28-0516848e26ff/w1_slave', "r") as f: 
+            with open(f'/sys/bus/w1/devices/{SENSOR}/w1_slave', "r") as f: 
                 filecontent = f.read()
                 stringvalue = filecontent.split("\n")[1].split(" ")[9]
                 temperature = float(stringvalue[2:]) / 1000
@@ -63,7 +65,7 @@ def get_temperature():
 
 def send_temperature(temperature):
     url = "https://wwidw-backend.inuthebot.duckdns.org/set_temperature"
-    payload = {"temperature": temperature, "hostname": HOSTNAME}
+    payload = {"temperature": temperature, "hostname": HOSTNAME, "sensor": SENSOR}
     headers = {"Content-Type": "application/json"}
 
     try:
@@ -76,12 +78,13 @@ def send_temperature(temperature):
         logging.error("Error sending temperature: %s", e)
 
 def main():
-    global HOSTNAME
+    global HOSTNAME, SENSOR
     args = parse_arguments()
     setup_logging(args.debug)
     
     HOSTNAME = args.hostname
-
+    SENSOR = args.sensor  # Store the sensor argument value
+    
     while True:
         temperature = get_temperature()
         if temperature is not None:
