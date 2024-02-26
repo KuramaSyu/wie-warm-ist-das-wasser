@@ -34,7 +34,7 @@ class Methods:
         """Get CPU temperature."""
         try: 
             # 1-wire Slave Datei lesen
-            with open('/sys/bus/w1/devices/28-0516848e26ff/w1_slave', "r") as f: 
+            with open(f'/sys/bus/w1/devices/{SENSOR}/w1_slave', "r") as f: 
                 filecontent = f.read()
                 stringvalue = filecontent.split("\n")[1].split(" ")[9]
                 temperature = float(stringvalue[2:]) / 1000
