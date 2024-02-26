@@ -1,4 +1,4 @@
-# Misst, wie warm das Wasser ist
+# Edle Ultraanzeige, wie warm das Wasser auf dem Ofen ist
 
 ## Overview
 Brief overview of the project.
