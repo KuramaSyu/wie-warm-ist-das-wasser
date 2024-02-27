@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  wasser-client:
+    build:
+      context: .
+    environment:
+      HOSTNAME: "notebook"
+      SENSOR: "Thermal Sensor"
+      OUTPUT_FILE: "/app/output/output.csv"
+      DEBUG: "True"
+    volumes:
+      - ./output:/app/output  # Map output directory
+      - /sys/bus/w1/devices/:/sys/bus/w1/devices/  # Map sensor directory
+    restart: unless-stopped
