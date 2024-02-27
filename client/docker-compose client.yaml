@@ -9,6 +9,7 @@ services:
       SENSOR: "28-3ce1d4430f2d"
       OUTPUT_FILE: "/app/output/output.csv"
       DEBUG: "True"
+      TZ: Europe/Berlin
     volumes:
       - ./output:/app/output  # Map output directory
       - /sys/bus/w1/devices/:/sys/bus/w1/devices/  # Map sensor directory
