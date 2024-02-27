@@ -107,7 +107,7 @@ def main():
         if temperatures:
             average_temperature = sum(temperatures) / len(temperatures)
             iso_time = datetime.utcnow().isoformat()
-            data = [HOSTNAME, SENSOR, iso_time, average_temperature]
+            data = [HOSTNAME, SENSOR, iso_time, round(average_temperature, 2)]
             logging.info(f"Write to CSV: {data}")
             write_to_csv(data)
 
