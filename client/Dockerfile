@@ -15,4 +15,4 @@ ARG SENSOR
 ARG OUTPUT_FILE
 ARG DEBUG
 # Run python script with environment variables as arguments when the container launches
-CMD ["python", "main.py", "${HOSTNAME}", "-s", "${SENSOR}", "--output", "${OUTPUT_FILE}", "--debug=${DEBUG}"]
+CMD ["python", "main.py", ${HOSTNAME}, "-s", ${SENSOR}, "--output", ${OUTPUT_FILE}, "--debug=", ${DEBUG}]
