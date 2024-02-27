@@ -5,8 +5,8 @@ services:
     build:
       context: .
     environment:
-      HOSTNAME: "notebook"
-      SENSOR: "Thermal Sensor"
+      HOSTNAME: "raspberrypi"
+      SENSOR: "28-3ce1d4430f2d"
       OUTPUT_FILE: "/app/output/output.csv"
       DEBUG: "True"
     volumes:

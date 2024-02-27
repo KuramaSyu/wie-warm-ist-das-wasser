@@ -10,5 +10,5 @@ COPY . /app
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Run python script when the container launches
-CMD ["python", "./main.py"]
+# Run python script with environment variables as arguments when the container launches
+CMD ["python", "main.py", "${HOSTNAME}", "-s", "${SENSOR}", "--output", "${OUTPUT_FILE}", "--debug=${DEBUG}"]
