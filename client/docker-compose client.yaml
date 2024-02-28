@@ -13,4 +13,4 @@ services:
     volumes:
       - ./output:/app/output  # Map output directory
       - /sys/bus/w1/devices/:/sys/bus/w1/devices/  # Map sensor directory
-    restart: unless-stopped
+    restart: "always"
