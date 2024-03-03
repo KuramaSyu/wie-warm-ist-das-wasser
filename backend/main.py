@@ -79,8 +79,8 @@ class TemperatureManager:
     def set_temperature(cls, temperature):
         cls.temperature = temperature
         cls.add_to_history(temperature)
-        for k, v in cls.history.items():
-            v.add(cls.get_history())
+        # for k, v in cls.history.items():
+        #     v.add(cls.get_history())
 
 
 
