@@ -111,7 +111,7 @@ const TemperatureHistoryChart: React.FC<TemperatureHistoryChartProps> = ({ optio
 
   const chartData = temperatureHistory?.getDataForChart() || { labels: [], datasets: [] };
 
-  return <Line data={chartData} className='w-[80vw]' />;
+  return <Line data={chartData} className='h-[40vw] w-[85vw]' />;
 };
 
 interface ChartOption {
@@ -124,7 +124,7 @@ const TemperatureDisplay: React.FC = () => {
   const [temperature, setTemperature] = useState<number | null>(null);
   const [temperatureData, setTemperatureData] = useState<{ time: number, temperature: number }[]>([]);
   const charts: ChartOption[] = [
-    { label: 'Every second', recordInterval: 1, maxIndex: 120 },
+    { label: 'Every second', recordInterval: 1, maxIndex: 3600 },
     { label: 'Every 10 seconds', recordInterval: 10, maxIndex: 120 },
     { label: 'Every minute', recordInterval: 60, maxIndex: 100 },
     { label: 'Every 5 minutes', recordInterval: 300, maxIndex: 100 },
