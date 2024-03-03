@@ -92,6 +92,7 @@ const TemperatureHistoryChart: React.FC<TemperatureHistoryChartProps> = ({ optio
     const fetchData = async () => {
       try {
         const response = await fetchTemperature();
+        if (response.temperature <= 0) return;
         const newTemperature = response.temperature;
         const newTimestamp = response.timestamp;
         temperatureHistory?.add(newTemperature, newTimestamp);
