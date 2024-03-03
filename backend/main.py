@@ -68,10 +68,11 @@ class TemperatureManager:
     
     @classmethod
     def get_temperature(cls):
-        json = {
-            "temperature": cls.temperature or 0,
-            "history": [v.to_dict(k) for k, v in cls.history_handlers.items()] 
-        }
+        return cls.temperature or 0
+        # json = {
+        #     "temperature": cls.temperature or 0,
+        #     "history": [v.to_dict(k) for k, v in cls.history_handlers.items()] 
+        # }
         return json
     
     @classmethod
