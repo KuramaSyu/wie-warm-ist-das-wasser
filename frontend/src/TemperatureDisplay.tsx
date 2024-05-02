@@ -280,8 +280,8 @@ const TemperatureDisplay: React.FC = () => {
 
   return (
     <div className="flex flex-col justify-center items-center px-4">
-      <h1 className="text-3xl sm:text-4xl font-bold mb-4 sm:mb-4">Wie warm ist das</h1>
-      <h1 className="text-6xl sm:text-6xl font-bold sm:mb-4">Wasser?</h1>
+      <h1 className="text-3xl sm:text-4xl font-bold mb-4 sm:mb-4">Wie warm ist mein</h1>
+      <h1 className="text-6xl sm:text-6xl font-bold sm:mb-4">Zimmer?</h1>
       <div className={`text-6xl sm:text-8xl font-bold mt-12 mb-12 sm:my-10 p-8 sm:px-10 
                       sm:py-8 bg-black rounded-3xl bg-opacity-20 text-blue-500 
                       transition duration-150 ease-out ${temperature === null ? 'animate-pulse' : ''}`}>
