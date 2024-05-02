@@ -169,17 +169,24 @@ const TemperatureDisplay: React.FC = () => {
       y: {
         ticks: {
           color: 'white', // Set the font color for y-axis ticks to white
+          fontSize: 16,
         },
       },
       x: {
         ticks: {
           color: 'white', // Set the font color for x-axis ticks to white
+          fontSize: 16,
         },
       },
     },
     plugins: {
       legend: {
+        display: false, // Hide the legend
         position: 'top' as const,
+          labels: {
+            color: 'white', // Set the label color to white
+            fontSize: 20,
+          },
       },
     },
   });
@@ -211,19 +218,23 @@ const TemperatureDisplay: React.FC = () => {
   };
   const now = Date.now(); // Current timestamp in milliseconds
   const selectedNumberHours = selectedNumber * 3600000; // Convert selectedNumber hours to milliseconds
-  const chunkSize = chartComponents[selectedChart];
-  const chunks = [];
+  const filteredTemperatureDataByDate = temperatureData.filter(dataPoint => dataPoint.time >= now - selectedNumberHours);
   var filteredTemperatureData: any[] = [];
-  for (let i = 0; i < temperatureData.length; i += chunkSize) {
-    chunks.push(temperatureData.slice(i, i + chunkSize));
-  }
+
   if (selectedChart === 'Every second') {
-    filteredTemperatureData = temperatureData.filter(dataPoint => dataPoint.time >= now - selectedNumberHours);
+    filteredTemperatureData = filteredTemperatureDataByDate;
   } else {
+    
+    const chunkSize = chartComponents[selectedChart];
+    const chunks = [];
+    
+    for (let i = 0; i < temperatureData.length; i += chunkSize) {
+      chunks.push(temperatureData.slice(i, i + chunkSize));
+    }
     filteredTemperatureData = chunks.map(chunk => {
       const sumTemperature = chunk.reduce((acc, dataPoint) => acc + dataPoint.temperature, 0);
       const meanTemperature = sumTemperature / chunk.length;
-    
+
       const sumTime = chunk.reduce((acc, dataPoint) => acc + dataPoint.time, 0);
       const meanTime = sumTime / chunk.length;
     
@@ -233,20 +244,20 @@ const TemperatureDisplay: React.FC = () => {
       };
     });
   }
+  var temperatureIncrease: any[] = [];
 
-  // const filteredTemperatureDataByMod = temperatureData.filter((dataPoint, index) => {
-  //   return index % chartComponents[selectedChart] === 0 &&
-  //   dataPoint.time >= now - selectedNumberHours
-  // });
-  // const filteredTemperatureData = filteredTemperatureDataByMod.filter(dataPoint => {
-  //   const dataPointTime = dataPoint.time; // Assuming dataPoint.time is the timestamp in milliseconds
-  //   return dataPointTime >= now - selectedNumberHours && dataPointTime <= now;
-  // });
+  for (let i = 0; i < filteredTemperatureData.length; i++) {
+    if (i === 0) {
+      temperatureIncrease.push({ time: filteredTemperatureData[i].time, increase: 0 });
+    } else {
+      temperatureIncrease.push({increase: filteredTemperatureData[i].temperature - filteredTemperatureData[i - 1].temperature, time: filteredTemperatureData[i].time});
+    }
+  }
   const data = {
     labels: filteredTemperatureData.map(dataPoint => new Date(dataPoint.time).toLocaleTimeString()),
     datasets: [
       {
-        label: 'Temperature',
+        label: '',
         data: filteredTemperatureData.map(dataPoint => dataPoint.temperature),
         fill: false,
         borderColor: 'rgb(75, 192, 192)',
@@ -254,9 +265,21 @@ const TemperatureDisplay: React.FC = () => {
       },
     ],
   };
+  const increaseData = {
+    labels: temperatureIncrease.map(dataPoint => new Date(dataPoint.time).toLocaleTimeString()),
+    datasets: [
+      {
+        label: '',
+        data: temperatureIncrease.map(dataPoint => dataPoint.increase),
+        fill: false,
+        borderColor: 'rgb(147, 0, 255)',
+        tension: 0.1,
+      },
+    ],
+  };
 
   return (
-    <div className="flex flex-col justify-center items-center h-screen w-screen px-4">
+    <div className="flex flex-col justify-center items-center px-4">
       <h1 className="text-3xl sm:text-4xl font-bold mb-4 sm:mb-4">Wie warm ist das</h1>
       <h1 className="text-6xl sm:text-6xl font-bold sm:mb-4">Wasser?</h1>
       <div className={`text-6xl sm:text-8xl font-bold mt-12 mb-12 sm:my-10 p-8 sm:px-10 
@@ -264,7 +287,7 @@ const TemperatureDisplay: React.FC = () => {
                       transition duration-150 ease-out ${temperature === null ? 'animate-pulse' : ''}`}>
         {temperature !== null ? `${temperature.toFixed(2)}°C` : 'Loading...'}
       </div>
-      <div className="flex flex-col justify-center items-center h-screen w-screen px-4">
+      <div className="flex flex-col justify-center items-center px-4 w-full h-fit">
       <div className="flex">
         {Object.keys(chartComponents).map((label) => (
           <button
@@ -278,14 +301,28 @@ const TemperatureDisplay: React.FC = () => {
           </button>
         ))}
       </div>
-      <div>
-        Show last {selectedNumber} hours
-        <FloatSlider onChange={on_time_range_change} />
+
+      <div className="flex flex-col mt-2 w-full justify-center">
+        <div className="flex mt-2 w-full h-3/4 justify-center">
+          Show last {selectedNumber} hours
+          <br/>
+        </div >
+        <div className="flex mt-2 w-full h-min justify-center opacity-50">
+          <FloatSlider onChange={on_time_range_change}/>
+        </div>
+        
       </div>
-      
-      <div className="flex mt-8 w-full h-4/5 justify-center">
-        {<Line data={data} options={chartOptions} updateMode={"active"}/>}
+      <div className='flex flex-col w-full h-max items-center'>
+        <div className="flex flex-col mt-8 w-full max-w-fit h-[60vh] items-center justify-center text-3xl bg-black/10 p-10 rounded-2xl">
+          Temperature
+          {<Line data={data} options={chartOptions} updateMode={"active"}/>}
+        </div>
+        <div className="flex flex-col mt-8 w-full max-w-fit h-[60vh] items-center justify-center text-3xl bg-black/10 p-10 rounded-2xl">
+          Temperature Increase
+          {<Line data={increaseData} options={chartOptions} updateMode={"active"}/>}
+        </div>
       </div>
+
     </div>
     </div>
   );
