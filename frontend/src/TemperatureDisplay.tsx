@@ -312,12 +312,12 @@ const TemperatureDisplay: React.FC = () => {
         </div>
         
       </div>
-      <div className='flex flex-col w-full h-max items-center'>
-        <div className="flex flex-col mt-8 w-full max-w-fit h-[60vh] items-center justify-center text-3xl bg-black/10 p-10 rounded-2xl">
+      <div className='flex flex-col w-full h-max items-center mx-12 mt-10'>
+        <div className="flex flex-col w-full h-[60vh] items-center justify-center text-3xl bg-black/10 p-10 rounded-2xl">
           Temperature
           {<Line data={data} options={chartOptions} updateMode={"active"}/>}
         </div>
-        <div className="flex flex-col mt-8 w-full max-w-fit h-[60vh] items-center justify-center text-3xl bg-black/10 p-10 rounded-2xl">
+        <div className="flex flex-col m-8 w-full h-[60vh] items-center justify-center text-3xl bg-black/10 p-10 rounded-2xl">
           Temperature Increase
           {<Line data={increaseData} options={chartOptions} updateMode={"active"}/>}
         </div>
