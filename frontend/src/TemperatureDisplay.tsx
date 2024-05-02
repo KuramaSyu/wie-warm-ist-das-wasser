@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import TimeRangePicker from './components/FloatSlider';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -11,6 +12,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import FloatSlider from './components/FloatSlider';
 
 ChartJS.register(
   CategoryScale,
@@ -124,22 +126,20 @@ interface ChartOption {
 const TemperatureDisplay: React.FC = () => {
   const [temperature, setTemperature] = useState<number | null>(null);
   const [temperatureData, setTemperatureData] = useState<{ time: number, temperature: number }[]>([]);
-  const charts: ChartOption[] = [
-    { label: 'Every second', recordInterval: 1, maxIndex: 3600 },
-    { label: 'Every 10 seconds', recordInterval: 10, maxIndex: 120 },
-    { label: 'Every minute', recordInterval: 60, maxIndex: 100 },
-    { label: 'Every 5 minutes', recordInterval: 300, maxIndex: 100 },
-  ];
   const [selectedChart, setSelectedChart] = useState<keyof typeof chartComponents>('Every second');// Initial selection
-  const fetchTemperature = async () => {
-    return { temperature: temperature !== null ? temperature : 0, timestamp: Date.now() };
-  }
+  const [selectedNumber, setSelectedNumber] = useState<number>(1); // Initial selection
+
   const chartComponents = {
-    'Every second': <TemperatureHistoryChart option={charts[0]} fetchTemperature={fetchTemperature}/>,
-    'Every 10 seconds': <TemperatureHistoryChart option={charts[1]} fetchTemperature={fetchTemperature}/>,
-    'Every minute': <TemperatureHistoryChart option={charts[2]} fetchTemperature={fetchTemperature}/>,
-    'Every 5 minutes': <TemperatureHistoryChart option={charts[3]} fetchTemperature={fetchTemperature}/>,
+    'Every second': 1,
+    'Every 10 seconds': 10,
+    'Every 30 seconds': 30,
+    'Every minute': 60,
+    'Every 5 minutes': 60*5,
+    'Every 15 minutes': 60*15,
+    'Every 30 minutes': 60*30,
+    'Every hour': 60*60,
   };
+  
 
   const handleChartSelection = (chartLabel: keyof typeof chartComponents) => {
     setSelectedChart(chartLabel);
@@ -163,12 +163,91 @@ const TemperatureDisplay: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const [chartOptions, setChartOptions] = useState({
+    responsive: true,
+    scales: {
+      y: {
+        ticks: {
+          color: 'white', // Set the font color for y-axis ticks to white
+        },
+      },
+      x: {
+        ticks: {
+          color: 'white', // Set the font color for x-axis ticks to white
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        position: 'top' as const,
+      },
+    },
+  });
+
+  useEffect(() => {
+    // Function to update chart options based on window size
+    const updateChartOptions = () => {
+      setChartOptions(prevOptions => ({
+        ...prevOptions,
+        maintainAspectRatio: window.innerWidth > 768, // Adjust maintainAspectRatio based on window width
+      }));
+    };
+
+    // Initial options update
+    updateChartOptions();
+
+    // Add event listener for window resize
+    window.addEventListener('resize', updateChartOptions);
+
+    // Cleanup function to remove event listener
+    return () => {
+      window.removeEventListener('resize', updateChartOptions);
+    };
+  }, []); // Empty dependency array ensures this effect runs only once after the initial render
+
+  const on_time_range_change = (selectedNumber: number) => {
+    setSelectedNumber(selectedNumber);
+    // Here you can handle the logic based on the selected timestamp
+  };
+  const now = Date.now(); // Current timestamp in milliseconds
+  const selectedNumberHours = selectedNumber * 3600000; // Convert selectedNumber hours to milliseconds
+  const chunkSize = chartComponents[selectedChart];
+  const chunks = [];
+  var filteredTemperatureData: any[] = [];
+  for (let i = 0; i < temperatureData.length; i += chunkSize) {
+    chunks.push(temperatureData.slice(i, i + chunkSize));
+  }
+  if (selectedChart === 'Every second') {
+    filteredTemperatureData = temperatureData.filter(dataPoint => dataPoint.time >= now - selectedNumberHours);
+  } else {
+    filteredTemperatureData = chunks.map(chunk => {
+      const sumTemperature = chunk.reduce((acc, dataPoint) => acc + dataPoint.temperature, 0);
+      const meanTemperature = sumTemperature / chunk.length;
+    
+      const sumTime = chunk.reduce((acc, dataPoint) => acc + dataPoint.time, 0);
+      const meanTime = sumTime / chunk.length;
+    
+      return {
+        temperature: meanTemperature,
+        time: meanTime
+      };
+    });
+  }
+
+  // const filteredTemperatureDataByMod = temperatureData.filter((dataPoint, index) => {
+  //   return index % chartComponents[selectedChart] === 0 &&
+  //   dataPoint.time >= now - selectedNumberHours
+  // });
+  // const filteredTemperatureData = filteredTemperatureDataByMod.filter(dataPoint => {
+  //   const dataPointTime = dataPoint.time; // Assuming dataPoint.time is the timestamp in milliseconds
+  //   return dataPointTime >= now - selectedNumberHours && dataPointTime <= now;
+  // });
   const data = {
-    labels: temperatureData.map(dataPoint => new Date(dataPoint.time).toLocaleTimeString()),
+    labels: filteredTemperatureData.map(dataPoint => new Date(dataPoint.time).toLocaleTimeString()),
     datasets: [
       {
         label: 'Temperature',
-        data: temperatureData.map(dataPoint => dataPoint.temperature),
+        data: filteredTemperatureData.map(dataPoint => dataPoint.temperature),
         fill: false,
         borderColor: 'rgb(75, 192, 192)',
         tension: 0.1,
@@ -177,7 +256,7 @@ const TemperatureDisplay: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center h-max min-w-screen px-4">
+    <div className="flex flex-col justify-center items-center h-screen w-screen px-4">
       <h1 className="text-3xl sm:text-4xl font-bold mb-4 sm:mb-4">Wie warm ist das</h1>
       <h1 className="text-6xl sm:text-6xl font-bold sm:mb-4">Wasser?</h1>
       <div className={`text-6xl sm:text-8xl font-bold mt-12 mb-12 sm:my-10 p-8 sm:px-10 
@@ -185,13 +264,13 @@ const TemperatureDisplay: React.FC = () => {
                       transition duration-150 ease-out ${temperature === null ? 'animate-pulse' : ''}`}>
         {temperature !== null ? `${temperature.toFixed(2)}°C` : 'Loading...'}
       </div>
-      <div className="flex flex-col justify-center items-center h-max min-w-screen px-4">
+      <div className="flex flex-col justify-center items-center h-screen w-screen px-4">
       <div className="flex">
         {Object.keys(chartComponents).map((label) => (
           <button
             key={label}
             className={`px-4 py-2 mr-4 rounded-md ${
-              selectedChart === label ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
+              selectedChart === label ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-700'
             }`}
             onClick={() => handleChartSelection(label as keyof typeof chartComponents)}
           >
@@ -199,8 +278,13 @@ const TemperatureDisplay: React.FC = () => {
           </button>
         ))}
       </div>
-      <div className="mt-8">
-        {chartComponents[selectedChart]}
+      <div>
+        Show last {selectedNumber} hours
+        <FloatSlider onChange={on_time_range_change} />
+      </div>
+      
+      <div className="flex mt-8 w-full h-4/5 justify-center">
+        {<Line data={data} options={chartOptions} updateMode={"active"}/>}
       </div>
     </div>
     </div>
