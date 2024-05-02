@@ -228,8 +228,8 @@ const TemperatureDisplay: React.FC = () => {
     const chunkSize = chartComponents[selectedChart];
     const chunks = [];
     
-    for (let i = 0; i < temperatureData.length; i += chunkSize) {
-      chunks.push(temperatureData.slice(i, i + chunkSize));
+    for (let i = 0; i < filteredTemperatureDataByDate.length; i += chunkSize) {
+      chunks.push(filteredTemperatureDataByDate.slice(i, i + chunkSize));
     }
     filteredTemperatureData = chunks.map(chunk => {
       const sumTemperature = chunk.reduce((acc, dataPoint) => acc + dataPoint.temperature, 0);
