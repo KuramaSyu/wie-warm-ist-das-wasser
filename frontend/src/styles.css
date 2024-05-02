@@ -1,0 +1,13 @@
+/* styles.css */
+.custom-line-chart {
+    width: 90vw; /* 90% of the viewport width */
+    height: 50vh; /* 50% of the viewport height */
+  }
+
+  /* Media query for smaller screens */
+@media (max-width: 768px) {
+    .custom-line-chart {
+      width: 80vw; /* Adjust width for smaller screens */
+      height: 40vh; /* Adjust height for smaller screens */
+    }
+  }
