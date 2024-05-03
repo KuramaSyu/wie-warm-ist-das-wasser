@@ -106,27 +106,6 @@ const TemperatureDisplay: React.FC = () => {
     },
   });
 
-  useEffect(() => {
-    // Function to update chart options based on window size
-    const updateChartOptions = () => {
-      setChartOptions(prevOptions => ({
-        ...prevOptions,
-        maintainAspectRatio: window.innerWidth > 768, // Adjust maintainAspectRatio based on window width
-      }));
-    };
-
-    // Initial options update
-    updateChartOptions();
-
-    // Add event listener for window resize
-    window.addEventListener('resize', updateChartOptions);
-
-    // Cleanup function to remove event listener
-    return () => {
-      window.removeEventListener('resize', updateChartOptions);
-    };
-  }, []); // Empty dependency array ensures this effect runs only once after the initial render
-
   const on_time_range_change = (selectedNumber: number) => {
     setSelectedNumber(selectedNumber);
     // Here you can handle the logic based on the selected timestamp
