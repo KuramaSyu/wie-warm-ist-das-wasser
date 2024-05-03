@@ -11,14 +11,15 @@ from typing import *
 from pprint import pformat
 import csv
 from datetime import datetime
+import GPUtil
 
-HOSTNAME: Literal["raspberrypi", "notebook"] = None
+HOSTNAME: Literal["raspberrypi", "notebook", "nvidea"] = None
 SENSOR: Optional[str] = None  # Variable to store the sensor argument value
 OUTPUT_FILE = "output.csv"  # Default output file
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Script to send CPU temperature to a server.')
-    parser.add_argument('hostname', choices=['raspberrypi', 'notebook'], help='Hostname of the device')
+    parser.add_argument('hostname', choices=['raspberrypi', 'notebook', 'nvidea'], help='Hostname of the device')
     parser.add_argument('-s', '--sensor', help='Sensor type (optional)')
     parser.add_argument('-o', '--output', default=OUTPUT_FILE, help='Output CSV file')
     parser.add_argument('--debug', action='store_true', help='Enable debug mode')
@@ -31,9 +32,10 @@ def setup_logging(debug):
 class Methods:
     @staticmethod
     def raspberry_pi():
-        """Get CPU temperature."""
+        """Get CPU temperature of a specific sensor on Raspberry Pi measured in Celsius."""
         try: 
             # 1-wire Slave Datei lesen
+            print("raed raspberry pi")
             with open(f'/sys/bus/w1/devices/{SENSOR}/w1_slave', "r") as f: 
                 filecontent = f.read()
                 stringvalue = filecontent.split("\n")[1].split(" ")[9]
@@ -52,12 +54,19 @@ class Methods:
         """Get CPU temperature."""
         try:
             # Read CPU temperature from psutil
-            logging.debug(pformat(psutil.sensors_temperatures()))
+            print("read notebook")
+            print(f"temperature:{pformat(psutil.sensors_temperatures())}")
             temperature = psutil.sensors_temperatures()['amdgpu'][0].current
             return temperature
         except Exception as e:
             logging.error(f"Error reading CPU temperature: {e}")
             return 0
+        
+    @staticmethod
+    def nvidea():
+        """Get GPU temperature of a nvidea card."""
+        gpu = GPUtil.getGPUs()[0]
+        return gpu.temperature
         
         
 def get_temperature():
@@ -66,9 +75,11 @@ def get_temperature():
         return Methods.raspberry_pi()
     elif HOSTNAME == "notebook":
         return Methods.notebook()
+    elif HOSTNAME == "nvidea":
+        return Methods.nvidea()
 
 def send_temperature(temperature):
-    url = "https://wwidw-backend.inuthebot.duckdns.org/set_temperature"
+    url = "http://localhost:8889/set_temperature"
     payload = {"temperature": temperature, "hostname": HOSTNAME}
     headers = {"Content-Type": "application/json"}
 
