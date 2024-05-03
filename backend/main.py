@@ -46,9 +46,7 @@ class TemperatureHistory:
 class TemperatureManager:
     temperature: float = 0
     history: List[float] = []
-    history_handlers: Dict[str, TemperatureHistory] = {
-        "1s": TemperatureHistory(60*60*24*3),
-    }
+    history_handlers: Dict[str, TemperatureHistory] = {}
     
     @classmethod
     def get_history(cls):
