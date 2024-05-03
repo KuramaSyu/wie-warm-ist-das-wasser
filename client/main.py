@@ -16,13 +16,14 @@ import GPUtil
 HOSTNAME: Literal["raspberrypi", "notebook", "nvidea"] = None
 SENSOR: Optional[str] = None  # Variable to store the sensor argument value
 OUTPUT_FILE = "output.csv"  # Default output file
-
+ENDPOINT = "https://wwidw-backend.inuthebot.duckdns.org"
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Script to send CPU temperature to a server.')
     parser.add_argument('hostname', choices=['raspberrypi', 'notebook', 'nvidea'], help='Hostname of the device')
     parser.add_argument('-s', '--sensor', help='Sensor type (optional)')
     parser.add_argument('-o', '--output', default=OUTPUT_FILE, help='Output CSV file')
     parser.add_argument('--debug', action='store_true', help='Enable debug mode')
+    parser.add_argument('--endpoint', default=ENDPOINT, help='Endpoint to send temperature data to')
     return parser.parse_args()
 
 def setup_logging(debug):
@@ -79,7 +80,7 @@ def get_temperature():
         return Methods.nvidea()
 
 def send_temperature(temperature):
-    url = "http://localhost:8889/set_temperature"
+    url = f"{ENDPOINT}/set_temperature"
     payload = {"temperature": temperature, "hostname": HOSTNAME}
     headers = {"Content-Type": "application/json"}
 
@@ -101,7 +102,7 @@ def main():
     global HOSTNAME, SENSOR, OUTPUT_FILE
     args = parse_arguments()
     setup_logging(args.debug)
-    
+    ENDPOINT = args.endpoint
     HOSTNAME = args.hostname
     SENSOR = args.sensor
     OUTPUT_FILE = args.output
