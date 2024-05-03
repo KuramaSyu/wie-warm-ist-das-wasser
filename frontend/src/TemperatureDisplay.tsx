@@ -14,6 +14,7 @@ import {
 import { Line } from 'react-chartjs-2';
 import FloatSlider from './components/FloatSlider';
 
+const BASE_URL = 'https://wwidw-backend.inuthebot.duckdns.org';
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -36,6 +37,45 @@ export const options = {
     },
   },
 };
+
+interface TemperatureEntry {
+  time: number;
+  temperature: number;
+}
+
+const initial_load = false;
+const fetch_temperature_history = async (setter: React.Dispatch<React.SetStateAction<TemperatureEntry[]>>) => {
+  try {
+    const seconds = 60 * 60 * 12; // Fetch temperature history for the last 12 hours
+    const response = await axios.get(`${BASE_URL}/get_temperature_history?seconds=${seconds}`);
+    const temperature_history: number[] = response.data.history;
+
+    // Construct an array to store formatted temperature data
+    const formattedTemperatureData: TemperatureEntry[] = [];
+
+    // Loop through the temperature history
+    temperature_history.reverse().forEach((temperature, index) => {
+      // Calculate time for each entry based on its position in the array
+      const time = new Date(Date.now() - (index * 1000)); // Assuming each entry is 1 second apart
+
+      // Construct an object with time and temperature
+      const temperatureEntry: TemperatureEntry = {
+        time: time.getTime(),
+        temperature: temperature
+      };
+
+      // Add the temperature entry to the formatted data array
+      formattedTemperatureData.push(temperatureEntry);
+    });
+
+    // Set the formatted temperature data using setTemperatureData
+    console.log('Temperature history fetched:', formattedTemperatureData);
+    return formattedTemperatureData.reverse();
+  } catch (error) {
+    console.error('Error fetching temperature history:', error);
+    return [];
+  }
+}
 
 
 const TemperatureDisplay: React.FC = () => {
@@ -60,10 +100,24 @@ const TemperatureDisplay: React.FC = () => {
     setSelectedChart(chartLabel);
   };
 
+
   useEffect(() => {
     const fetchTemperature = async () => {
       try {
-        const response = await axios.get('https://wwidw-backend.inuthebot.duckdns.org/get_temperature');
+        if (temperatureData.length === 0) {
+          const data = await fetch_temperature_history(setTemperatureData);
+          if (data.length > 60*60*2 ) {
+            setSelectedChart('Every 5 minutes');
+          } else if (data.length > 60*30 ) {
+            setSelectedChart('Every minute');
+          } else if (data.length > 60*15 ) {
+            setSelectedChart('Every 30 seconds');
+          } else if (data.length > 60*10 ) {
+            setSelectedChart('Every 10 seconds');
+          }
+          setTemperatureData(data);
+        }
+        const response = await axios.get(`${BASE_URL}/get_temperature`);
         const newTemperature = response.data.temperature;
         setTemperature(newTemperature);
         setTemperatureData(prevData => [...prevData, { time: Date.now(), temperature: newTemperature }]);
@@ -76,7 +130,7 @@ const TemperatureDisplay: React.FC = () => {
 
     // Cleanup function to clear interval when component unmounts or changes
     return () => clearInterval(interval);
-  }, []);
+  }, [temperatureData]);
 
   const [chartOptions, setChartOptions] = useState({
     responsive: true,
