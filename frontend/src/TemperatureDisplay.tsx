@@ -37,50 +37,6 @@ export const options = {
   },
 };
 
-interface TemperatureData {
-  temperature: number;
-  timestamp: number;
-}
-
-
-class TemperatureHistory {
-  private history: TemperatureData[] = [];
-  private _last_time_added: number = 0;
-
-  constructor(
-      private index_size: number,
-      private record_interval: number
-  ) {}
-
-  add(temperature: number, timestamp: number): void {
-      const now = Date.now();
-      if ((now - this._last_time_added) < this.record_interval * 1000) {
-          return;
-      }
-
-      this.history.push({ temperature, timestamp });
-      this._last_time_added = now;
-
-      if (this.history.length > this.index_size) {
-          this.history.shift();
-      }
-  }
-
-  getDataForChart(): { labels: string[], datasets: { label: string, data: number[], fill: boolean, borderColor: string, tension: number }[] } {
-      return {
-          labels: this.history.map(data => new Date(data.timestamp).toLocaleTimeString()),
-          datasets: [
-              {
-                  label: 'Temperature',
-                  data: this.history.map(data => data.temperature),
-                  fill: false,
-                  borderColor: 'rgb(75, 192, 192)',
-                  tension: 0.1,
-              },
-          ],
-      };
-  }
-}
 
 const TemperatureDisplay: React.FC = () => {
   const [temperature, setTemperature] = useState<number | null>(null);
