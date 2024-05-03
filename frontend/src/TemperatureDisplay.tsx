@@ -82,47 +82,6 @@ class TemperatureHistory {
   }
 }
 
-interface TemperatureHistoryChartProps {
-  option: ChartOption;
-  fetchTemperature: () => Promise<TemperatureData>;
-}
-
-const TemperatureHistoryChart: React.FC<TemperatureHistoryChartProps> = ({ option, fetchTemperature }) => {
-  const [temperatureHistory, setTemperatureHistory] = useState<TemperatureHistory | null>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetchTemperature();
-        if (response.temperature <= 0) return;
-        const newTemperature = response.temperature;
-        const newTimestamp = response.timestamp;
-        temperatureHistory?.add(newTemperature, newTimestamp);
-      } catch (error) {
-        console.error('Error fetching temperature:', error);
-      }
-    };
-
-    const interval = setInterval(fetchData, option.recordInterval * 1000);
-
-    return;
-  }, [option.recordInterval, temperatureHistory, fetchTemperature]);
-
-  useEffect(() => {
-    setTemperatureHistory(new TemperatureHistory(option.maxIndex, option.recordInterval));
-  }, [option.maxIndex, option.recordInterval]);
-
-  const chartData = temperatureHistory?.getDataForChart() || { labels: [], datasets: [] };
-
-  return <Line data={chartData} className='h-[40vw] w-[85vw]' />;
-};
-
-interface ChartOption {
-  label: string;
-  recordInterval: number;
-  maxIndex: number;
-}
-
 const TemperatureDisplay: React.FC = () => {
   const [temperature, setTemperature] = useState<number | null>(null);
   const [temperatureData, setTemperatureData] = useState<{ time: number, temperature: number }[]>([]);
