@@ -14,7 +14,7 @@ from datetime import datetime
 import GPUtil
 import json
 data = None
-with open("../config.json") as f:
+with open("config.json") as f:
     print(f"read {f.name}")
     data = json.load(f)
 
