@@ -12,11 +12,22 @@ from pprint import pformat
 import csv
 from datetime import datetime
 import GPUtil
+import json
+data = None
+with open("../config.json") as f:
+    print(f"read {f.name}")
+    data = json.load(f)
+
+if not data:
+    raise Exception("Config file not found in root directory. ")
+
+ENDPOINT: str|None = data.get("BACKEND_URL")
+if not ENDPOINT:
+    raise Exception("Backend URL not found in config.json in root directory. ")
 
 HOSTNAME: Literal["raspberrypi", "notebook", "nvidea"] = None
 SENSOR: Optional[str] = None  # Variable to store the sensor argument value
 OUTPUT_FILE = "output.csv"  # Default output file
-ENDPOINT = "https://wwidw-backend.inuthebot.duckdns.org"
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Script to send CPU temperature to a server.')
     parser.add_argument('hostname', choices=['raspberrypi', 'notebook', 'nvidea'], help='Hostname of the device')
