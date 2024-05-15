@@ -1,0 +1,5 @@
+{
+    "BASE_URL": "http://localhost:8889",
+    "BACKEND_URL": "http://localhost:8889",
+    "CLIENT_TYPE": "nvidia"
+}

@@ -1,0 +1,5 @@
+{
+    "BASE_URL": "https://wwiwd-backend.inu-the-bot.com",
+    "BACKEND_URL": "https://wwiwd-backend.inu-the-bot.com",
+    "CLIENT_TYPE": "raspberrypi"
+}
