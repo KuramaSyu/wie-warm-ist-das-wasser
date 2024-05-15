@@ -4,10 +4,12 @@ import asyncio
 import random
 import traceback
 import json
+import logging
 from typing import *
 from datetime import datetime, timedelta
 import math
 
+logging.info("Starting server...")
 
 class TemperatureHistory:
     def __init__(
@@ -132,8 +134,12 @@ def make_app():
     ])
 
 if __name__ == "__main__":
-    print("Starting server...")
+    # setup logging:
+    logging.basicConfig(level=logging.DEBUG)
+    logging.info("Starting server...")
     app = make_app()
     app.listen(8889)
-    print("Server running at http://localhost:8889/temperature")
+    logging.info("Server running at http://localhost:8889/temperature")
     tornado.ioloop.IOLoop.current().start()
+else:
+    logging.critical("Server not started")
