@@ -13,8 +13,9 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import FloatSlider from './components/FloatSlider';
+const config = require('./config.json')
+const BASE_URL = config.BASE_URL;
 
-const BASE_URL = 'https://wwidw-backend.inuthebot.duckdns.org';
 ChartJS.register(
   CategoryScale,
   LinearScale,
