@@ -6,16 +6,13 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.frontend
-    # ports:
-    #   - "3000:3000"
+    depends_on:
+      - backend
     volumes:
       - ./src:/app/src
       - ./public:/app/public
     environment:
       - NODE_ENV=development
-    depends_on:
-      - postgres
-      - backend
     labels:     
       com.centurylinklabs.watchtower.enable: false
       traefik.enable: true
@@ -29,12 +26,10 @@ services:
   backend:
     container_name: wasser-backend
     build:
-      context: ./backend
-      dockerfile: Dockerfile.backend
-    # ports:
-    #   - "8889:8889"
-    depends_on:
-      - postgres
+      context: ./backend/
+      dockerfile: ./Dockerfile.backend
+    ports:
+      - "8889:8889"
     labels:
       com.centurylinklabs.watchtower.enable: false
       traefik.enable: true
@@ -45,16 +40,16 @@ services:
       - default
       - proxy
 
-  postgres:
-    container_name: wasser-postgres
-    image: postgres:latest
-    restart: always
-    environment:
-      POSTGRES_DB: your_database_name
-      POSTGRES_USER: your_username
-      POSTGRES_PASSWORD: your_password
-    networks:
-      - default
+  # postgres:
+  #   container_name: wasser-postgres
+  #   image: postgres:latest
+  #   restart: always
+  #   environment:
+  #     POSTGRES_DB: your_database_name
+  #     POSTGRES_USER: your_username
+  #     POSTGRES_PASSWORD: your_password
+  #   networks:
+  #     - default
 
 networks:
   proxy:
